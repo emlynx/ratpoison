@@ -1200,17 +1200,35 @@ find_frame_up (rp_frame *frame)
   rp_screen *s;
   rp_frame *cur;
 
+  int error = -1;
+  rp_frame *best_choice;
+  int best_error = 0;
+
   list_for_each_entry (s, &rp_screens, node)
     {
       list_for_each_entry (cur, &s->frames, node)
         {
           if (frame_top_abs (frame) == frame_bottom_abs (cur))
-            if (frame_right_abs (frame) >= frame_left_abs (cur) && frame_left_abs (frame) <= frame_right_abs (cur))
-              return cur;
+            {
+              if (frame_right_abs (frame) >= frame_left_abs (cur) && frame_left_abs (frame) <= frame_right_abs (cur))
+                {
+                  if (error == -1)
+                    {
+                      best_choice = cur;
+                      best_error = abs(frame_right_abs(frame) - frame_right_abs(cur)) + abs(frame_left_abs(frame) - frame_left_abs(cur));
+                    }
+                  error = abs(frame_right_abs(frame) - frame_right_abs(cur)) + abs(frame_left_abs(frame) - frame_left_abs(cur));
+                  if (error < best_error)
+                    {
+                      best_choice = cur;
+                      best_error = error;
+                    }
+                }
+            }
         }
     }
 
-  return NULL;
+  return best_choice;
 }
 
 rp_frame *
@@ -1219,17 +1237,35 @@ find_frame_down (rp_frame *frame)
   rp_screen *s;
   rp_frame *cur;
 
+  int error = -1;
+  rp_frame *best_choice;
+  int best_error = 0;
+
   list_for_each_entry (s, &rp_screens, node)
     {
       list_for_each_entry (cur, &s->frames, node)
         {
           if (frame_bottom_abs (frame) == frame_top_abs (cur))
-            if (frame_right_abs (frame) >= frame_left_abs (cur) && frame_left_abs (frame) <= frame_right_abs (cur))
-              return cur;
+            {
+              if (frame_right_abs (frame) >= frame_left_abs (cur) && frame_left_abs (frame) <= frame_right_abs (cur))
+                {
+                  if (error == -1)
+                    {
+                      best_choice = cur;
+                      best_error = abs(frame_right_abs(frame) - frame_right_abs(cur)) + abs(frame_left_abs(frame) - frame_left_abs(cur));
+                    }
+                  error = abs(frame_right_abs(frame) - frame_right_abs(cur)) + abs(frame_left_abs(frame) - frame_left_abs(cur));
+                  if (error < best_error)
+                    {
+                      best_choice = cur;
+                      best_error = error;
+                    }
+                }
+            }
         }
     }
 
-  return NULL;
+  return best_choice;
 }
 
 rp_frame *
@@ -1238,17 +1274,35 @@ find_frame_left (rp_frame *frame)
   rp_screen *s;
   rp_frame *cur;
 
+  int error = -1;
+  rp_frame *best_choice;
+  int best_error = 0;
+
   list_for_each_entry (s, &rp_screens, node)
     {
       list_for_each_entry (cur, &s->frames, node)
         {
           if (frame_left_abs (frame) == frame_right_abs (cur))
-            if (frame_bottom_abs (frame) >= frame_top_abs (cur) && frame_top_abs (frame) <= frame_bottom_abs (cur))
-              return cur;
+            {
+              if (frame_bottom_abs (frame) >= frame_top_abs (cur) && frame_top_abs (frame) <= frame_bottom_abs (cur))
+                {
+                  if (error == -1)
+                    {
+                      best_choice = cur;
+                      best_error = abs(frame_bottom_abs(frame) - frame_bottom_abs(cur)) + abs(frame_top_abs(frame) - frame_top_abs(cur));
+                    }
+                  error = abs(frame_bottom_abs(frame) - frame_bottom_abs(cur)) + abs(frame_top_abs(frame) - frame_top_abs(cur));
+                  if (error < best_error)
+                    {
+                      best_choice = cur;
+                      best_error = error;
+                    }
+                }
+            }
         }
     }
 
-  return NULL;
+  return best_choice;
 }
 
 rp_frame *
@@ -1257,17 +1311,35 @@ find_frame_right (rp_frame *frame)
   rp_screen *s;
   rp_frame *cur;
 
+  int error = -1;
+  rp_frame *best_choice;
+  int best_error = 0;
+
   list_for_each_entry (s, &rp_screens, node)
     {
       list_for_each_entry (cur, &s->frames, node)
         {
-          if (frame_right_abs (frame) == frame_left_abs (cur))
-            if (frame_bottom_abs (frame) >= frame_top_abs (cur) && frame_top_abs (frame) <= frame_bottom_abs (cur))
-              return cur;
+          if (frame_left_abs (cur) == frame_right_abs (frame))
+            {
+              if (frame_bottom_abs (frame) >= frame_top_abs (cur) && frame_top_abs (frame) <= frame_bottom_abs (cur))
+                {
+                  if (error == -1)
+                    {
+                      best_choice = cur;
+                      best_error = abs(frame_bottom_abs(frame) - frame_bottom_abs(cur)) + abs(frame_top_abs(frame) - frame_top_abs(cur));
+                    }
+                  error = abs(frame_bottom_abs(frame) - frame_bottom_abs(cur)) + abs(frame_top_abs(frame) - frame_top_abs(cur));
+                  if (error < best_error)
+                    {
+                      best_choice = cur;
+                      best_error = error;
+                    }
+                }
+            }
         }
     }
 
-  return NULL;
+  return best_choice;
 }
 
 rp_frame *
