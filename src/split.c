@@ -139,11 +139,11 @@ maximize_frame (rp_frame *frame)
 {
   rp_screen *s = frames_screen (frame);
 
-  frame->x = defaults.padding_left;
-  frame->y = defaults.padding_top;
+  frame->x = defaults.padding_left + defaults.frame_border_width;
+  frame->y = defaults.padding_top + defaults.frame_border_width;
 
-  frame->width = screen_width (s);
-  frame->height = screen_height (s);
+  frame->width = screen_width (s) - 2 * defaults.frame_border_width;
+  frame->height = screen_height (s) - 2 * defaults.frame_border_width;
 }
 
 /* Create a full screen frame */
@@ -310,7 +310,7 @@ merge_frame (rp_frame *frame, int way)
     {
       list_for_each_entry (cur_frame, &s->frames, node)
         {
-          if (cur_frame->x + cur_frame->width == original_x
+          if (cur_frame->x + cur_frame->width + 2 * defaults.frame_border_width == original_x
               && original_y == cur_frame->y
               && original_height == cur_frame->height)
             {
@@ -322,7 +322,7 @@ merge_frame (rp_frame *frame, int way)
     {
       list_for_each_entry (cur_frame, &s->frames, node)
         {
-          if (original_y + original_height == cur_frame->y
+          if (original_y + original_height + 2 * defaults.frame_border_width == cur_frame->y
               && original_x == cur_frame->x
               && original_width == cur_frame->width)
             {
@@ -334,7 +334,7 @@ merge_frame (rp_frame *frame, int way)
     {
       list_for_each_entry (cur_frame, &s->frames, node)
         {
-          if (cur_frame->y + cur_frame->height == original_y
+          if (cur_frame->y + cur_frame->height + 2 * defaults.frame_border_width == original_y
               && original_x == cur_frame->x
               && original_width == cur_frame->width)
             {
@@ -346,7 +346,7 @@ merge_frame (rp_frame *frame, int way)
     {
       list_for_each_entry (cur_frame, &s->frames, node)
         {
-          if (original_x + original_width == cur_frame->x
+          if (original_x + original_width + 2 * defaults.frame_border_width == cur_frame->x
               && original_y == cur_frame->y
               && original_height == cur_frame->height)
             {
@@ -384,20 +384,20 @@ split_frame (rp_frame *frame, int way, int pixels)
   if (way == HORIZONTALLY)
     {
       new_frame->x = frame->x;
-      new_frame->y = frame->y + pixels;
+      new_frame->y = frame->y + pixels + defaults.frame_border_width;
       new_frame->width = frame->width;
-      new_frame->height = frame->height - pixels;
+      new_frame->height = frame->height - pixels - defaults.frame_border_width;
 
-      frame->height = pixels;
+      frame->height = pixels - defaults.frame_border_width;
     }
   else
     {
-      new_frame->x = frame->x + pixels;
+      new_frame->x = frame->x + pixels + defaults.frame_border_width;
       new_frame->y = frame->y;
-      new_frame->width = frame->width - pixels;
+      new_frame->width = frame->width - pixels - defaults.frame_border_width;
       new_frame->height = frame->height;
 
-      frame->width = pixels;
+      frame->width = pixels - defaults.frame_border_width;
     }
 
   win = find_window_for_frame (new_frame);
@@ -833,7 +833,7 @@ remove_frame (rp_frame *frame)
     {
       if (frame_is_below (frame, cur))
         cur->y = frame->y;
-      cur->height += frame->height;
+      cur->height += frame->height + 2 * defaults.frame_border_width;
       already_done = true;
     }
 
@@ -847,7 +847,7 @@ remove_frame (rp_frame *frame)
      deleted window. If any active frames overlap, it could have
      taken up the right amount of space, overlaps with the deleted
      frame but obviously didn't fit. */
-  if (total_frame_area(s) > area || !frames_overlap (cur, frame) || frame_overlaps (cur))
+  if (!frames_overlap (cur, frame) || frame_overlaps (cur))
     {
       PRINT_DEBUG (("Didn't fit vertically\n"));
 
@@ -868,7 +868,7 @@ remove_frame (rp_frame *frame)
     {
       if (frame_is_right (frame, cur))
         cur->x = frame->x;
-      cur->width += frame->width;
+      cur->width += frame->width + 2 * defaults.frame_border_width;
       already_done = true;
     }
 
@@ -876,7 +876,7 @@ remove_frame (rp_frame *frame)
   PRINT_DEBUG (("New Total Area: %d\n", total_frame_area(s)));
 
   /* Same test as the vertical test, above. */
-  if (total_frame_area(s) > area || !frames_overlap (cur, frame) || frame_overlaps (cur))
+  if (!frames_overlap (cur, frame) || frame_overlaps (cur))
     {
       PRINT_DEBUG (("Didn't fit horizontally\n"));
 
@@ -930,7 +930,7 @@ remove_frame (rp_frame *frame)
             {
               if (frame_is_below (frame, cur))
                 cur->y = frame->y;
-              cur->height += frame->height;
+              cur->height += frame->height + 2 * defaults.frame_border_width;
             }
 
           PRINT_DEBUG (("Attempting vertical Frame y=%d height=%d\n", cur->y, cur->height));
@@ -943,7 +943,7 @@ remove_frame (rp_frame *frame)
              deleted window. If any active frames overlap, it could have
              taken up the right amount of space, overlaps with the deleted
              frame but obviously didn't fit. */
-          if (total_frame_area(s) > area || !frames_overlap (cur, frame) || frame_overlaps (cur))
+          if (!frames_overlap (cur, frame) || frame_overlaps (cur))
             {
               PRINT_DEBUG (("Didn't fit vertically\n"));
 
@@ -964,14 +964,14 @@ remove_frame (rp_frame *frame)
             {
               if (frame_is_right (frame, cur))
                 cur->x = frame->x;
-              cur->width += frame->width;
+              cur->width += frame->width + 2 * defaults.frame_border_width;
             }
 
           PRINT_DEBUG (("Attempting horizontal Frame x=%d width=%d\n", cur->x, cur->width));
           PRINT_DEBUG (("New Total Area: %d\n", total_frame_area(s)));
 
           /* Same test as the vertical test, above. */
-          if (total_frame_area(s) > area || !frames_overlap (cur, frame) || frame_overlaps (cur))
+          if (!frames_overlap (cur, frame) || frame_overlaps (cur))
             {
               PRINT_DEBUG (("Didn't fit horizontally\n"));
 
@@ -1208,7 +1208,7 @@ find_frame_up (rp_frame *frame)
     {
       list_for_each_entry (cur, &s->frames, node)
         {
-          if (frame_top_abs (frame) == frame_bottom_abs (cur))
+          if (frame_top_abs (frame) == frame_bottom_abs (cur) + 2 * defaults.frame_border_width)
             {
               if (frame_right_abs (frame) >= frame_left_abs (cur) && frame_left_abs (frame) <= frame_right_abs (cur))
                 {
@@ -1245,7 +1245,7 @@ find_frame_down (rp_frame *frame)
     {
       list_for_each_entry (cur, &s->frames, node)
         {
-          if (frame_bottom_abs (frame) == frame_top_abs (cur))
+          if (frame_bottom_abs (frame) + 2 * defaults.frame_border_width == frame_top_abs (cur))
             {
               if (frame_right_abs (frame) >= frame_left_abs (cur) && frame_left_abs (frame) <= frame_right_abs (cur))
                 {
@@ -1282,7 +1282,7 @@ find_frame_left (rp_frame *frame)
     {
       list_for_each_entry (cur, &s->frames, node)
         {
-          if (frame_left_abs (frame) == frame_right_abs (cur))
+          if (frame_left_abs (frame) == frame_right_abs (cur) + 2 * defaults.frame_border_width)
             {
               if (frame_bottom_abs (frame) >= frame_top_abs (cur) && frame_top_abs (frame) <= frame_bottom_abs (cur))
                 {
@@ -1319,7 +1319,7 @@ find_frame_right (rp_frame *frame)
     {
       list_for_each_entry (cur, &s->frames, node)
         {
-          if (frame_left_abs (cur) == frame_right_abs (frame))
+          if (frame_left_abs (cur) == frame_right_abs (frame) + 2 * defaults.frame_border_width)
             {
               if (frame_bottom_abs (frame) >= frame_top_abs (cur) && frame_top_abs (frame) <= frame_bottom_abs (cur))
                 {

@@ -227,6 +227,7 @@ init_defaults (void)
 
   defaults.input_window_size   = 200;
   defaults.window_border_width = 1;
+  defaults.frame_border_width = 1;
   defaults.only_border         = 1;
   defaults.bar_x_padding       = 4;
   defaults.bar_y_padding       = 0;

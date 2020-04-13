@@ -243,6 +243,7 @@ struct rp_defaults
 
   int input_window_size;
   int window_border_width;
+  int frame_border_width;
   int only_border;
 
   int bar_x_padding;

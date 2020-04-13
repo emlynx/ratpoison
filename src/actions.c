@@ -156,6 +156,7 @@ static cmdret * set_bargravity (struct cmdarg **args);
 static cmdret * set_font (struct cmdarg **args);
 static cmdret * set_padding (struct cmdarg **args);
 static cmdret * set_border (struct cmdarg **args);
+static cmdret * set_frame_border (struct cmdarg **args);
 static cmdret * set_onlyborder(struct cmdarg **args);
 static cmdret * set_barborder (struct cmdarg **args);
 static cmdret * set_barinpadding (struct cmdarg **args);
@@ -350,6 +351,7 @@ init_set_vars (void)
   add_set_var ("barpadding", set_barpadding, 2, "", arg_NUMBER, "", arg_NUMBER);
   add_set_var ("bgcolor", set_bgcolor, 1, "", arg_STRING);
   add_set_var ("border", set_border, 1, "", arg_NUMBER);
+  add_set_var ("frame_border", set_frame_border, 1, "", arg_NUMBER);
   add_set_var ("onlyborder", set_onlyborder, 1, "", arg_NUMBER);
   add_set_var ("bwcolor", set_bwcolor, 1, "", arg_STRING);
   add_set_var ("fgcolor", set_fgcolor, 1, "", arg_STRING);
@@ -4177,6 +4179,22 @@ set_border (struct cmdarg **args)
       if (win_get_frame (win))
         maximize (win);
     }
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+static cmdret *
+set_frame_border (struct cmdarg **args)
+{
+  rp_window *win;
+
+  if (args[0] == NULL)
+    return cmdret_new (RET_SUCCESS, "%d", defaults.window_border_width);
+
+  if (ARG(0,number) < 0)
+    return cmdret_new (RET_FAILURE, "set border: %s", invalid_negative_arg);
+
+  defaults.frame_border_width = ARG(0,number);
 
   return cmdret_new (RET_SUCCESS, NULL);
 }
