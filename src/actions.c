@@ -195,6 +195,7 @@ static cmdret *cmd_colon (int interactive, struct cmdarg **args);
 static cmdret *cmd_commands (int interactive, struct cmdarg **args);
 static cmdret *cmd_curframe (int interactive, struct cmdarg **args);
 static cmdret *cmd_delete (int interactive, struct cmdarg **args);
+static cmdret *cmd_d_merge (int interactive, struct cmdarg **args);
 static cmdret *cmd_echo (int interactive, struct cmdarg **args);
 static cmdret *cmd_escape (int interactive, struct cmdarg **args);
 static cmdret *cmd_exec (int interactive, struct cmdarg **args);
@@ -231,6 +232,7 @@ static cmdret *cmd_h_split (int interactive, struct cmdarg **args);
 static cmdret *cmd_help (int interactive, struct cmdarg **args);
 static cmdret *cmd_info (int interactive, struct cmdarg **args);
 static cmdret *cmd_kill (int interactive, struct cmdarg **args);
+static cmdret *cmd_l_merge (int interactive, struct cmdarg **args);
 static cmdret *cmd_lastmsg (int interactive, struct cmdarg **args);
 static cmdret *cmd_license (int interactive, struct cmdarg **args);
 static cmdret *cmd_link (int interactive, struct cmdarg **args);
@@ -248,6 +250,7 @@ static cmdret *cmd_prev (int interactive, struct cmdarg **args);
 static cmdret *cmd_prev_frame (int interactive, struct cmdarg **args);
 static cmdret *cmd_prevscreen (int interactive, struct cmdarg **args);
 static cmdret *cmd_quit (int interactive, struct cmdarg **args);
+static cmdret *cmd_r_merge (int interactive, struct cmdarg **args);
 static cmdret *cmd_redisplay (int interactive, struct cmdarg **args);
 static cmdret *cmd_remhook (int interactive, struct cmdarg **args);
 static cmdret *cmd_remove (int interactive, struct cmdarg **args);
@@ -262,6 +265,7 @@ static cmdret *cmd_source (int interactive, struct cmdarg **args);
 static cmdret *cmd_startup_message (int interactive, struct cmdarg **args);
 static cmdret *cmd_time (int interactive, struct cmdarg **args);
 static cmdret *cmd_tmpwm (int interactive, struct cmdarg **args);
+static cmdret *cmd_u_merge (int interactive, struct cmdarg **args);
 static cmdret *cmd_unalias (int interactive, struct cmdarg **args);
 static cmdret *cmd_unmanage (int interactive, struct cmdarg **args);
 static cmdret *cmd_unsetenv (int interactive, struct cmdarg **args);
@@ -514,6 +518,10 @@ init_user_commands(void)
                "Keymap: ", arg_KEYMAP);
   add_command ("listhook",      cmd_listhook,   1, 1, 1,
                "Hook: ", arg_HOOK);
+  add_command ("lmerge",        cmd_l_merge,    0, 0, 0);
+  add_command ("dmerge",        cmd_d_merge,    0, 0, 0);
+  add_command ("umerge",        cmd_u_merge,    0, 0, 0);
+  add_command ("rmerge",        cmd_r_merge,    0, 0, 0);
   add_command ("meta",          cmd_meta,       1, 0, 0,
                "key: ", arg_KEY);
   add_command ("msgwait",       cmd_msgwait,    1, 0, 0,
@@ -6361,4 +6369,52 @@ cmd_commands (int interactive UNUSED, struct cmdarg **args UNUSED)
   ret = cmdret_new (RET_SUCCESS, "%s", sbuf_get (sb));
   sbuf_free (sb);
   return ret;
+}
+
+cmdret *
+cmd_l_merge (int interactive UNUSED, struct cmdarg **args UNUSED)
+{
+  rp_frame *frame;
+
+  push_frame_undo (rp_current_screen); /* fdump to stack */
+  frame = current_frame();
+  l_merge_frame (frame);
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_d_merge (int interactive UNUSED, struct cmdarg **args UNUSED)
+{
+  rp_frame *frame;
+
+  push_frame_undo (rp_current_screen); /* fdump to stack */
+  frame = current_frame();
+  d_merge_frame (frame);
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_u_merge (int interactive UNUSED, struct cmdarg **args UNUSED)
+{
+  rp_frame *frame;
+
+  push_frame_undo (rp_current_screen); /* fdump to stack */
+  frame = current_frame();
+  u_merge_frame (frame);
+
+  return cmdret_new (RET_SUCCESS, NULL);
+}
+
+cmdret *
+cmd_r_merge (int interactive UNUSED, struct cmdarg **args UNUSED)
+{
+  rp_frame *frame;
+
+  push_frame_undo (rp_current_screen); /* fdump to stack */
+  frame = current_frame();
+  r_merge_frame (frame);
+
+  return cmdret_new (RET_SUCCESS, NULL);
 }

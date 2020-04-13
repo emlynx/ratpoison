@@ -29,6 +29,11 @@
 #define VERTICALLY 0
 #define HORIZONTALLY 1
 
+#define LEFT 0
+#define DOWN 1
+#define UP 2
+#define RIGHT 3
+
 static void
 update_last_access (rp_frame *frame)
 {
@@ -289,6 +294,73 @@ find_window_for_frame (rp_frame *frame)
   return NULL;
 }
 
+static void
+merge_frame (rp_frame *frame, int way)
+{
+  rp_screen *s = frames_screen (frame);
+  rp_frame *cur_frame;
+  
+  int original_x = frame->x;
+  int original_y = frame->y;
+  int original_width = frame->width;
+  int original_height = frame->height;
+
+  if (way == LEFT)
+    {
+      list_for_each_entry (cur_frame, &s->frames, node)
+        {
+          if (cur_frame->x + cur_frame->width == original_x
+              && original_y == cur_frame->y
+              && original_height == cur_frame->height)
+            {
+              remove_frame (cur_frame);
+            }
+        }
+    } 
+  if (way == DOWN)
+    {
+      list_for_each_entry (cur_frame, &s->frames, node)
+        {
+          if (original_y + original_height == cur_frame->y
+              && original_x == cur_frame->x
+              && original_width == cur_frame->width)
+            {
+              remove_frame (cur_frame);
+            }
+        }
+    } 
+  if (way == UP)
+    {
+      list_for_each_entry (cur_frame, &s->frames, node)
+        {
+          if (cur_frame->y + cur_frame->height == original_y
+              && original_x == cur_frame->x
+              && original_width == cur_frame->width)
+            {
+              remove_frame (cur_frame);
+            }
+        }
+    } 
+  if (way == RIGHT)
+    {
+      list_for_each_entry (cur_frame, &s->frames, node)
+        {
+          if (original_x + original_width == cur_frame->x
+              && original_y == cur_frame->y
+              && original_height == cur_frame->height)
+            {
+              remove_frame (cur_frame);
+            }
+        }
+    } 
+
+  if (frame->win_number != EMPTY)
+    {
+      maximize_all_windows_in_frame (frame);
+      XRaiseWindow (dpy, find_window_number (frame->win_number)->w);
+    }
+}
+
 /* Splits the frame in 2. if way is 0 then split vertically otherwise
    split it horizontally. */
 static void
@@ -370,6 +442,30 @@ void
 h_split_frame (rp_frame *frame, int pixels)
 {
   split_frame (frame, HORIZONTALLY, pixels);
+}
+
+void
+l_merge_frame (rp_frame *frame)
+{
+  merge_frame (frame, LEFT);
+}
+
+void
+d_merge_frame (rp_frame *frame)
+{
+  merge_frame (frame, DOWN);
+}
+
+void
+u_merge_frame (rp_frame *frame)
+{
+  merge_frame (frame, UP);
+}
+
+void
+r_merge_frame (rp_frame *frame)
+{
+  merge_frame (frame, RIGHT);
 }
 
 void
