@@ -226,8 +226,8 @@ init_defaults (void)
   defaults.maxsize_gravity = CenterGravity;
 
   defaults.input_window_size   = 200;
-  defaults.window_border_width = 1;
-  defaults.frame_border_width = 1;
+  defaults.window_border_width = 0;
+  defaults.frame_border_width = 20;
   defaults.only_border         = 1;
   defaults.bar_x_padding       = 4;
   defaults.bar_y_padding       = 0;
@@ -239,10 +239,10 @@ init_defaults (void)
   defaults.frame_indicator_timeout = 1;
   defaults.frame_resize_unit = 10;
 
-  defaults.padding_left   = 0;
-  defaults.padding_right  = 0;
-  defaults.padding_top    = 0;
-  defaults.padding_bottom = 0;
+  defaults.padding_left   = 20;
+  defaults.padding_right  = 20;
+  defaults.padding_top    = 20;
+  defaults.padding_bottom = 20;
 
 #ifdef USE_XFT_FONT
   defaults.font_string = xstrdup (DEFAULT_XFT_FONT);
